@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
 import {
   useApolloClient,
   useSubscription,
   useSuspenseQuery,
-} from "@apollo/client/react"
-import { useState } from "react"
-import { useAccumulateBatch } from "@/hooks/use-accomulate-batch"
-import { ACTIVITY_ROW_FRAGMENT, ActivityRow } from "./ActivityRow"
-import { ActivityTypeFilter } from "./ActivityTypeFilter"
+} from "@apollo/client/react";
+import { useState } from "react";
+import { useAccumulateBatch } from "@/hooks/use-accomulate-batch";
+import { ACTIVITY_ROW_FRAGMENT, ActivityRow } from "./ActivityRow";
+import { ActivityType, ActivityTypeFilter } from "./ActivityTypeFilter";
 import type {
   GlobalActivityQueryQuery,
   GlobalActivityQueryQueryVariables,
   GlobalActivitySubscriptionSubscription,
   GlobalActivitySubscriptionSubscriptionVariables,
-} from "./GlobalActivityFeed.generated"
+} from "./GlobalActivityFeed.generated";
 
 // Query to fetch initial activity
 const GLOBAL_ACTIVITY_QUERY = gql`
@@ -29,7 +29,7 @@ const GLOBAL_ACTIVITY_QUERY = gql`
     }
   }
   ${ACTIVITY_ROW_FRAGMENT}
-`
+`;
 
 // Subscription for real-time updates
 const GLOBAL_ACTIVITY_SUBSCRIPTION = gql`
@@ -41,29 +41,24 @@ const GLOBAL_ACTIVITY_SUBSCRIPTION = gql`
     }
   }
   ${ACTIVITY_ROW_FRAGMENT}
-`
+`;
 
 type Activity = NonNullable<
   GlobalActivityQueryQuery["globalActivity"]
->["items"][number]
+>["items"][number];
 
 export function GlobalActivityFeed() {
-  const client = useApolloClient()
+  const client = useApolloClient();
   const [subscriptionStatus, setSubscriptionStatus] = useState<
     "connecting" | "connected" | "error"
-  >("connecting")
-  const [selectedActivityType, setSelectedActivityType] = useState<
-    string | null
-  >(null)
+  >("connecting");
+  const [selectedActivityType, setSelectedActivityType] =
+    useState<ActivityType>(null);
 
   // Build filter object (casting to proper ActivityType)
   const filter = selectedActivityType
-    ? {
-        activityTypes: [
-          selectedActivityType as GlobalActivityQueryQuery["globalActivity"]["items"][number]["type"],
-        ],
-      }
-    : undefined
+    ? { activityTypes: [selectedActivityType] }
+    : undefined;
 
   // Step 1: Fetch initial activity data
   const { data: queryData, refetch } = useSuspenseQuery<
@@ -71,26 +66,22 @@ export function GlobalActivityFeed() {
     GlobalActivityQueryQueryVariables
   >(GLOBAL_ACTIVITY_QUERY, {
     variables: { limit: 20, filter },
-  })
+  });
 
   // Refetch when filter changes
-  const handleFilterChange = async (newType: string | null) => {
-    setSelectedActivityType(newType)
-    setSubscriptionStatus("connecting")
+  const handleFilterChange = async (newType: ActivityType) => {
+    setSelectedActivityType(newType);
+    setSubscriptionStatus("connecting");
     const newFilter = newType
-      ? {
-          activityTypes: [
-            newType as GlobalActivityQueryQuery["globalActivity"]["items"][number]["type"],
-          ],
-        }
-      : undefined
-    await refetch({ limit: 20, filter: newFilter })
-  }
+      ? { activityTypes: [newType] }
+      : undefined;
+    await refetch({ limit: 20, filter: newFilter });
+  };
 
   // Step 2: Subscribe to real-time updates
   // Use useAccumulateBatch to batch incoming activities and update cache efficiently
   const updateCache = useAccumulateBatch<Activity>(
-    activities => {
+    (activities) => {
       // Write new activities to cache - type policy will handle merging and deduplication
       // TypeScript doesn't understand that fragment-masked types are compatible with full types,
       // but Apollo handles this correctly at runtime since the fragments contain all required data
@@ -102,19 +93,19 @@ export function GlobalActivityFeed() {
         variables: { limit: 20, filter },
         data: {
           globalActivity: {
-            __typename: "ActivityConnection" as const,
+            __typename: "ActivityConnection",
             // @ts-expect-error its okay
             items: activities,
           },
         },
-      })
+      });
     },
     {
       leading: true,
       delay: 2000,
       resetKey: JSON.stringify(filter),
-    },
-  )
+    }
+  );
 
   // Following Apollo docs: https://www.apollographql.com/docs/react/data/subscriptions
   const { error: subscriptionError } = useSubscription<
@@ -124,32 +115,32 @@ export function GlobalActivityFeed() {
     variables: { filter },
     shouldResubscribe: true, // Automatically resubscribe on error/disconnect
     onComplete: () => {
-      setSubscriptionStatus("connected")
+      setSubscriptionStatus("connected");
     },
     onError: () => {
-      setSubscriptionStatus("error")
+      setSubscriptionStatus("error");
     },
     ignoreResults: true,
     onData: ({ data }) => {
       if (data?.data?.globalActivity) {
-        console.log("🔄 Subscription data:", data)
-        const newActivity = data.data.globalActivity
-        setSubscriptionStatus("connected")
+        console.log("🔄 Subscription data:", data);
+        const newActivity = data.data.globalActivity;
+        setSubscriptionStatus("connected");
 
         // Pass activity to batch accumulator instead of directly updating cache
-        updateCache(newActivity)
+        updateCache(newActivity);
       }
     },
-  })
+  });
 
-  const error = subscriptionError
+  const error = subscriptionError;
 
   // Read activities directly from Apollo cache (no local state!)
-  const activities = queryData?.globalActivity?.items || []
+  const activities = queryData?.globalActivity?.items || [];
 
   // Determine overall status
-  const isConnected = subscriptionStatus === "connected"
-  const hasError = !!error
+  const isConnected = subscriptionStatus === "connected";
+  const hasError = !!error;
 
   return (
     <div className="space-y-6">
@@ -167,8 +158,8 @@ export function GlobalActivityFeed() {
           hasError
             ? "border-red-200 bg-red-50"
             : isConnected
-              ? "border-green-200 bg-green-50"
-              : "border-yellow-200 bg-yellow-50"
+            ? "border-green-200 bg-green-50"
+            : "border-yellow-200 bg-yellow-50"
         }`}
       >
         <div className="flex items-start gap-3">
@@ -177,8 +168,8 @@ export function GlobalActivityFeed() {
               hasError
                 ? "bg-red-600"
                 : isConnected
-                  ? "bg-green-600"
-                  : "bg-yellow-600"
+                ? "bg-green-600"
+                : "bg-yellow-600"
             } text-white`}
           >
             {hasError ? (
@@ -207,23 +198,23 @@ export function GlobalActivityFeed() {
                 hasError
                   ? "text-red-900"
                   : isConnected
-                    ? "text-green-900"
-                    : "text-yellow-900"
+                  ? "text-green-900"
+                  : "text-yellow-900"
               }`}
             >
               {hasError
                 ? "Connection Error"
                 : isConnected
-                  ? "Live Activity Feed"
-                  : "Connecting..."}
+                ? "Live Activity Feed"
+                : "Connecting..."}
             </h4>
             <p
               className={`mt-1 text-sm ${
                 hasError
                   ? "text-red-800"
                   : isConnected
-                    ? "text-green-800"
-                    : "text-yellow-800"
+                  ? "text-green-800"
+                  : "text-yellow-800"
               }`}
             >
               {hasError ? (
@@ -294,11 +285,11 @@ export function GlobalActivityFeed() {
             </p>
           </div>
         ) : (
-          activities.map(activity => (
+          activities.map((activity) => (
             <ActivityRow activity={activity} key={activity.id} />
           ))
         )}
       </div>
     </div>
-  )
+  );
 }

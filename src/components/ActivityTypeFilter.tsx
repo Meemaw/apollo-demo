@@ -1,11 +1,7 @@
 "use client"
 
-type ActivityTypeOption = {
-  label: string
-  value: string | null
-}
 
-const activityTypeOptions: ActivityTypeOption[] = [
+const activityTypeOptions = [
   { label: "All", value: null },
   { label: "Sale", value: "SALE" },
   { label: "Listing", value: "LISTING" },
@@ -14,17 +10,19 @@ const activityTypeOptions: ActivityTypeOption[] = [
   { label: "Item Offer", value: "OFFER" },
   { label: "Collection Offer", value: "COLLECTION_OFFER" },
   { label: "Trait Offer", value: "TRAIT_OFFER" },
-]
+] as const
+
+export type ActivityType =  typeof activityTypeOptions[number]['value']
 
 type Props = {
-  value: string | null
-  onChange: (value: string | null) => void
+  value: ActivityType
+  onChange: (value: ActivityType) => void
 }
 
 export function ActivityTypeFilter({ value, onChange }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value === "all" ? null : e.target.value
-    onChange(selectedValue)
+    onChange(selectedValue as ActivityType)
   }
 
   return (
