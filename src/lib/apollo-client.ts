@@ -60,17 +60,6 @@ export function createApolloClient() {
       // Following Apollo docs: https://www.apollographql.com/docs/react/data/fragments#generating-possibletypes-automatically
       possibleTypes: possibleTypesResult.possibleTypes,
       typePolicies: {
-        Query: {
-          fields: {
-            globalActivity: {
-              // Merge incoming activities with existing ones
-              // Apollo docs: https://www.apollographql.com/docs/react/caching/cache-field-behavior
-              merge(_existing, incoming) {
-                return incoming
-              },
-            },
-          },
-        },
         ActivityConnection: {
           fields: {
             items: {
