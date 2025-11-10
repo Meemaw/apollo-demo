@@ -40,6 +40,10 @@ const config: CodegenConfig = {
         customDirectives: {
           apolloUnmask: true,
         },
+        scalars: {
+          DateTime: 'string',
+          Address: 'string'
+        }
       },
     },
   },

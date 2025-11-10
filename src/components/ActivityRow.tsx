@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { type FragmentType, gql, type TypedDocumentNode } from "@apollo/client"
-import { useFragment } from "@apollo/client/react"
-import { memo } from "react"
-import type { ActivityRowFragment } from "./ActivityRow.generated"
+import { type FragmentType, gql, type TypedDocumentNode } from "@apollo/client";
+import { useFragment } from "@apollo/client/react";
+import { memo } from "react";
+import type { ActivityRowFragment } from "./ActivityRow.generated";
 
 // Fragment definition colocated with component
 // Following Apollo docs: https://www.apollographql.com/docs/react/data/fragments#colocating-fragments
@@ -34,47 +34,46 @@ export const ACTIVITY_ROW_FRAGMENT: TypedDocumentNode<ActivityRowFragment> = gql
       address
     }
   }
-`
+`;
 
 type Props = {
-  activity: FragmentType<ActivityRowFragment>
-}
+  activity: FragmentType<ActivityRowFragment>;
+};
 
 // Helper to format address (Address scalar is typed as unknown)
-function formatAddress(address: unknown): string {
-  const addr = address as string
-  if (addr && addr.length > 10) {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+function formatAddress(address: string | undefined): string {
+  if (address && address.length > 10) {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }
-  return "Unknown"
+  return "Unknown";
 }
 
 export const ActivityRow = memo(({ activity: activityRef }: Props) => {
   const activity = useFragment({
     from: activityRef,
     fragment: ACTIVITY_ROW_FRAGMENT,
-  }).data
+  }).data;
 
   const getActivityIcon = () => {
     switch (activity.type) {
       case "SALE":
-        return "💰"
+        return "💰";
       case "LISTING":
-        return "🏷️"
+        return "🏷️";
       case "TRANSFER":
-        return "📦"
+        return "📦";
       case "MINT":
-        return "✨"
+        return "✨";
       case "OFFER":
-        return "📝"
+        return "📝";
       default:
-        return "📌"
+        return "📌";
     }
-  }
+  };
 
   const getActivityDescription = () => {
-    const itemName = activity.item?.name || "Unknown Item"
-    const hasPrice = activity.price?.native?.unit
+    const itemName = activity.item?.name || "Unknown Item";
+    const hasPrice = activity.price?.native?.unit;
 
     switch (activity.type) {
       case "SALE":
@@ -98,7 +97,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               </>
             )}
           </div>
-        )
+        );
 
       case "LISTING":
         return (
@@ -120,7 +119,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               </>
             )}
           </div>
-        )
+        );
 
       case "TRANSFER":
         return (
@@ -134,7 +133,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               {formatAddress(activity.to?.address)}
             </span>
           </div>
-        )
+        );
 
       case "MINT":
         return (
@@ -147,7 +146,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               by {formatAddress(activity.to?.address)}
             </span>
           </div>
-        )
+        );
 
       case "OFFER":
       case "COLLECTION_OFFER":
@@ -171,7 +170,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               </>
             )}
           </div>
-        )
+        );
 
       default:
         return (
@@ -184,21 +183,24 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
               {activity.type}
             </span>
           </div>
-        )
+        );
     }
-  }
+  };
 
-  const imageUrl = activity.item?.imageUrl || activity.collection?.imageUrl
+  const imageUrl = activity.item?.imageUrl || activity.collection?.imageUrl;
 
   // Handle eventTime (typed as unknown but is a DateTime string)
   const timeAgo = (() => {
     try {
-      const time = activity.eventTime as string
-      return new Date(time).toLocaleTimeString()
+      const time = activity.eventTime;
+      if (!time) {
+        return "Unknown time";
+      }
+      return new Date(time).toLocaleTimeString();
     } catch {
-      return "Unknown time"
+      return "Unknown time";
     }
-  })()
+  })();
 
   return (
     <div className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 shadow-sm transition-all hover:border-gray-300 hover:shadow">
@@ -225,5 +227,5 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
       {/* Time */}
       <div className="flex-shrink-0 text-xs text-gray-500">{timeAgo}</div>
     </div>
-  )
-})
+  );
+});
