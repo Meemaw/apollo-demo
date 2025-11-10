@@ -11,6 +11,9 @@ importers:
       '@apollo/client-integration-nextjs':
         specifier: 0.14.1
         version: 0.14.1(@apollo/client@4.1.0-alpha.3(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2))(@types/react@19.2.2)(graphql@16.11.0)(next@15.5.6(@babel/core@7.28.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+      '@apollo/persisted-query-lists':
+        specifier: ^1.0.0
+        version: 1.0.0(@apollo/client@4.1.0-alpha.3(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2))(graphql@16.11.0)
       graphql:
         specifier: 16.11.0
         version: 16.11.0
