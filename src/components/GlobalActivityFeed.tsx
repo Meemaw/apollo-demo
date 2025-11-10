@@ -72,9 +72,7 @@ export function GlobalActivityFeed() {
   const handleFilterChange = async (newType: ActivityType) => {
     setSelectedActivityType(newType);
     setSubscriptionStatus("connecting");
-    const newFilter = newType
-      ? { activityTypes: [newType] }
-      : undefined;
+    const newFilter = newType ? { activityTypes: [newType] } : undefined;
     await refetch({ limit: 20, filter: newFilter });
   };
 
@@ -85,26 +83,29 @@ export function GlobalActivityFeed() {
       // Write new activities to cache - type policy will handle merging and deduplication
       // TypeScript doesn't understand that fragment-masked types are compatible with full types,
       // but Apollo handles this correctly at runtime since the fragments contain all required data
-      client.writeQuery<
-        GlobalActivityQueryQuery,
-        GlobalActivityQueryQueryVariables
-      >({
-        query: GLOBAL_ACTIVITY_QUERY,
-        variables: { limit: 20, filter },
-        data: {
-          globalActivity: {
-            __typename: "ActivityConnection",
-            // @ts-expect-error its okay
-            items: activities,
+      client.cache.modify({
+        fields: {
+          globalActivity(
+            existingActivityConnection = {
+              __typename: "ActivityConnection",
+              items: [],
+            }
+          ) {
+            return {
+              ...existingActivityConnection,
+              items: [
+                activities.map((activity) => ({
+                  id: activity.id,
+                  __typename: activity.__typename,
+                })),
+                ...existingActivityConnection.items,
+              ],
+            };
           },
         },
       });
     },
-    {
-      leading: true,
-      delay: 2000,
-      resetKey: JSON.stringify(filter),
-    }
+    { leading: true, delay: 2000, resetKey: JSON.stringify(filter) }
   );
 
   // Following Apollo docs: https://www.apollographql.com/docs/react/data/subscriptions
