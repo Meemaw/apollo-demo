@@ -89,15 +89,13 @@ export function GlobalActivityFeed() {
             existingActivityConnection = {
               __typename: "ActivityConnection",
               items: [],
+              nextPageCursor: undefined
             }
           ) {
             return {
               ...existingActivityConnection,
               items: [
-                activities.map((activity) => ({
-                  id: activity.id,
-                  __typename: activity.__typename,
-                })),
+                ...activities,
                 ...existingActivityConnection.items,
               ],
             };

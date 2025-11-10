@@ -1,7 +1,6 @@
 "use client";
-
 import { type FragmentType, gql, type TypedDocumentNode } from "@apollo/client";
-import { useFragment as readFragmentData, useSuspenseFragment } from "@apollo/client/react";
+import {  useSuspenseFragment } from "@apollo/client/react";
 import { COLLECTION_CARD_FRAGMENT, CollectionCard } from "./CollectionCard";
 import type { CollectionCardListFragment } from "./CollectionCardList.generated";
 

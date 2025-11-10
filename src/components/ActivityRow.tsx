@@ -20,6 +20,7 @@ export const ACTIVITY_ROW_FRAGMENT: TypedDocumentNode<ActivityRowFragment> = gql
     item {
       name
       imageUrl
+      tokenId
     }
     price {
       native {
@@ -72,7 +73,7 @@ export const ActivityRow = memo(({ activity: activityRef }: Props) => {
   };
 
   const getActivityDescription = () => {
-    const itemName = activity.item?.name || "Unknown Item";
+    const itemName = activity.item?.name || `#${activity.item?.tokenId}`;
     const hasPrice = activity.price?.native?.unit;
 
     switch (activity.type) {
