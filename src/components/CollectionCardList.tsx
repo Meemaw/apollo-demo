@@ -1,0 +1,44 @@
+"use client"
+
+import { type FragmentType, gql, type TypedDocumentNode } from "@apollo/client"
+import { useFragment as readFragmentData } from "@apollo/client/react"
+import { COLLECTION_CARD_FRAGMENT, CollectionCard } from "./CollectionCard"
+import type { CollectionCardListFragment } from "./CollectionCardList.generated"
+
+// Fragment that composes CollectionCard fragments
+export const COLLECTION_CARD_LIST_FRAGMENT: TypedDocumentNode<CollectionCardListFragment> = gql`
+  fragment CollectionCardList on Collection {
+    id
+    ...CollectionCard
+  }
+  ${COLLECTION_CARD_FRAGMENT}
+`
+
+type Props = {
+  collections: Array<FragmentType<CollectionCardListFragment>>
+}
+
+export function CollectionCardList({ collections }: Props) {
+  return (
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {collections.map(collection => {
+        const { data } = readFragmentData({
+          from: collection,
+          fragmentName: "CollectionCardList",
+          fragment: COLLECTION_CARD_LIST_FRAGMENT,
+        })
+
+        // Pass the original collection ref since CollectionCard will read its own fragment
+        // The data here is just used for the key
+        return (
+          <CollectionCard
+            collection={
+              collection as FragmentType<typeof COLLECTION_CARD_FRAGMENT>
+            }
+            key={data.id}
+          />
+        )
+      })}
+    </div>
+  )
+}

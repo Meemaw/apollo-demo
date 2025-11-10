@@ -1,0 +1,66 @@
+{
+  "name": "apollo-demo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "generate": "graphql-codegen",
+    "generate:watch": "graphql-codegen --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test:unit": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@apollo/client-integration-nextjs": "0.14.1",
+    "graphql": "16.11.0",
+    "graphql-ws": "6.0.6",
+    "next": "15.5.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@apollo/client": "4.0.9",
+    "@apollo/graphql-testing-library": "0.3.0",
+    "@chromatic-com/storybook": "4.1.2",
+    "@graphql-codegen/cli": "6.0.1",
+    "@graphql-codegen/client-preset": "5.1.1",
+    "@graphql-codegen/fragment-matcher": "^6.0.0",
+    "@graphql-codegen/introspection": "^5.0.0",
+    "@graphql-codegen/near-operation-file-preset": "^3.1.0",
+    "@graphql-codegen/typed-document-node": "^6.0.2",
+    "@graphql-codegen/typescript": "^5.0.2",
+    "@graphql-codegen/typescript-operations": "^5.0.2",
+    "@graphql-tools/mock": "^9.0.25",
+    "@graphql-tools/schema": "^10.0.25",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@storybook/addon-a11y": "^9.1.13",
+    "@storybook/addon-docs": "^9.1.13",
+    "@storybook/addon-vitest": "^9.1.13",
+    "@storybook/nextjs-vite": "^9.1.13",
+    "@storybook/react": "^9.1.13",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "msw": "2.12.1",
+    "msw-storybook-addon": "2.0.6",
+    "playwright": "^1.56.1",
+    "storybook": "^9.1.13",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}
